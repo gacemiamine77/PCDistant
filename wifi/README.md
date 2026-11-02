@@ -88,3 +88,21 @@ Tests manuels Windows/Android à faire :
 - Réactiver : l'ancien code échoue.
 - Couper le Wi-Fi : le client affiche une erreur sans rester bloqué.
 - Fermer l'agent : le port est fermé.
+
+## Recevoir automatiquement le code par Gmail (facultatif et gratuit)
+
+À chaque activation du partage, l'agent peut transmettre le **code à 4 chiffres**, le nom du PC et ses adresses locales à **gacemiamine@gmail.com**. Aucune capture ni liste d'applications n'est envoyée par e-mail. Une connexion Internet est nécessaire pour l'envoi ; la consultation reste limitée au Wi-Fi local.
+
+1. Mettez à jour les dépendances : ` .\.venv\Scripts\python.exe -m pip install -r requirements.txt`.
+2. Sur le compte Gmail qui servira d'expéditeur, activez la **validation en deux étapes**, puis créez un **mot de passe d'application Google** depuis les paramètres de sécurité Google (`https://myaccount.google.com/apppasswords`). Cette option peut être indisponible selon les règles du compte ; dans ce cas, l'envoi de cette version ne peut pas être configuré. N'activez pas d'accès moins sécurisé.
+3. Dans la fenêtre de l'agent, cliquez sur **Configurer Gmail**. Saisissez l'adresse du compte expéditeur puis les **16 caractères du mot de passe d'application**, uniquement sur votre PC. Ne saisissez pas votre mot de passe Google habituel et ne partagez aucun secret dans une conversation.
+4. Activez le partage (ou arrêtez-le puis réactivez-le s'il est déjà actif). L'envoi est effectué en arrière-plan sans bloquer l'interface. Le statut indique si Gmail a accepté le message ; cela ne garantit pas sa réception dans la boîte principale. Vérifiez les spams.
+5. **Désactiver l'envoi** supprime la configuration du gestionnaire d'identifiants Windows. Vous pouvez également révoquer le mot de passe d'application dans votre compte Google.
+
+Les identifiants sont enregistrés **uniquement dans le gestionnaire d'identifiants Windows** du compte utilisateur courant, pas dans un fichier de configuration ou dans Git. Aucun repli vers un stockage texte n'est prévu. Les logiciels exécutés sous votre compte Windows peuvent néanmoins accéder à son coffre : protégez votre session. L'expéditeur peut être le même compte que le destinataire.
+
+La connexion à Gmail utilise SMTP sur TLS avec validation du certificat. Cela **ne chiffre pas la liaison HTTP locale** entre téléphone et PC. Le message contient un code sensible et reste dans les boîtes mail ; protégez votre compte Gmail. Un envoi déjà commencé ne peut pas être annulé ni rappelé lors de l'arrêt du partage. Consultez le message le plus récent et ne réutilisez pas un code d'une session terminée. Un code à 4 chiffres peut exceptionnellement être tiré à nouveau lors d'une activation ultérieure.
+
+En cas de panne réseau ou d'échec d'authentification, il n'y a pas de nouvelle tentative automatique : le code reste visible et le partage Wi-Fi fonctionne. Réactivez le partage après correction pour générer et envoyer un nouveau code. Aucun véritable e-mail de test n'est envoyé par les tests automatisés ; l'envoi Gmail et le stockage Windows restent à vérifier sur votre PC.
+
+Pour empaqueter cette version avec PyInstaller, ajoutez `--hidden-import keyring.backends.Windows` à la commande de génération de l'EXE.
