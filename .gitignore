@@ -4,3 +4,9 @@
 *.user
 *.suo
 artifacts/
+
+**/.venv/
+**/__pycache__/
+**/dist/
+**/build/
+*.spec

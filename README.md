@@ -1,5 +1,9 @@
 # PCDistant
 
+## Nouvelle version gratuite Wi-Fi, sans Visual Studio
+
+La version **Python + interface web Android/PC** se trouve dans [`wifi/`](wifi/README.md). Commencez par ce guide : aucun abonnement ni serveur cloud, uniquement votre réseau privé. La version C# initiale est conservée ci-dessous.
+
 Deux applications C# pour **Visual Studio 2022 sous Windows** :
 
 - **PCDistant.Host** : application Windows Forms installée sur le PC à consulter.
