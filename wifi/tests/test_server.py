@@ -1,12 +1,12 @@
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from server import create_app
 
 
 class ServerTests(unittest.TestCase):
     def setUp(self):
-        self.token = "a" * 32
+        self.token = "0042"
         self.capture = Mock(return_value=b"fake-png")
         self.apps = Mock(return_value=[{"id": 42, "name": "Bloc-notes", "title": "Notes"}])
         self.notify = Mock()
@@ -54,8 +54,26 @@ class ServerTests(unittest.TestCase):
         self.assertNotIn("Access-Control-Allow-Origin", response.headers)
 
     def test_new_token_revokes_old_access(self):
-        other = create_app("b" * 32, applications=self.apps).test_client()
+        other = create_app("1234", applications=self.apps).test_client()
         self.assertEqual(other.get("/api/apps", headers=self.headers).status_code, 401)
+
+    def test_lockout_expires_and_covers_both_routes(self):
+        with patch("server.time.monotonic", return_value=100):
+            for _ in range(4):
+                self.assertEqual(self.client.get("/api/apps").status_code, 401)
+            response = self.client.get("/api/screenshot")
+            self.assertEqual(response.status_code, 429)
+            self.assertEqual(response.headers["Retry-After"], "60")
+            self.assertEqual(self.client.get("/api/apps", headers=self.headers).status_code, 429)
+        with patch("server.time.monotonic", return_value=161):
+            self.assertEqual(self.client.get("/api/apps", headers=self.headers).status_code, 200)
+        self.capture.assert_not_called()
+
+    def test_success_resets_failed_attempt_counter(self):
+        for _ in range(4):
+            self.assertEqual(self.client.get("/api/apps").status_code, 401)
+        self.assertEqual(self.client.get("/api/apps", headers=self.headers).status_code, 200)
+        self.assertEqual(self.client.get("/api/apps").status_code, 401)
 
     def test_no_write_routes(self):
         self.assertEqual(self.client.post("/api/apps", headers=self.headers).status_code, 405)

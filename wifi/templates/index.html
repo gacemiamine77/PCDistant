@@ -8,7 +8,7 @@
 <body><main>
 <header><span class="badge">RÉSEAU LOCAL · SANS CLOUD</span><h1>Votre PC,<br>à portée de main.</h1><p>Consultez votre écran et vos applications depuis votre téléphone.</p></header>
 <section><h2>Connexion au PC</h2><p>Activez le partage sur le PC puis recopiez son code. Le téléphone doit être connecté au même Wi-Fi.</p>
-<label for="code">Code d'accès</label><input id="code" type="password" maxlength="32" autocomplete="off" placeholder="Les 32 caractères affichés sur le PC" spellcheck="false">
+<label for="code">Code d'accès</label><input id="code" type="password" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" placeholder="Les 4 chiffres affichés sur le PC" spellcheck="false">
 <div class="actions"><button id="capture">Voir l'écran</button><button id="apps" class="secondary">Applications</button></div>
 <button id="clear" class="link">Effacer le code et les données affichées</button>
 <p id="status" role="status" aria-live="polite">Prêt à se connecter</p></section>

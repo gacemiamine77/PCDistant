@@ -64,6 +64,10 @@ def list_apps():
 def create_app(token, notify=lambda message: None, capture=capture_screen, applications=list_apps):
     app = Flask(__name__)
     app.config["MAX_CONTENT_LENGTH"] = 1024
+    # Limite globale (pas uniquement par IP) pour protéger le petit espace des PIN.
+    auth_lock = threading.Lock()
+    failed_attempts = 0
+    blocked_until = 0.0
     capture_lock = threading.Lock()
     last_capture = [float("-inf")]
 
@@ -82,9 +86,26 @@ def create_app(token, notify=lambda message: None, capture=capture_screen, appli
     def authenticated(function):
         @wraps(function)
         def wrapped(*args, **kwargs):
+            nonlocal failed_attempts, blocked_until
             supplied = request.headers.get("Authorization", "").encode("utf-8")
-            if not hmac.compare_digest(supplied, ("Bearer " + token).encode("utf-8")):
-                return jsonify(error="Code d'accès incorrect."), 401
+            with auth_lock:
+                now = time.monotonic()
+                if now < blocked_until:
+                    response = jsonify(error="Trop de tentatives. Réessayez dans 60 secondes.")
+                    response.status_code = 429
+                    response.headers["Retry-After"] = str(max(1, int(blocked_until - now + 0.999)))
+                    return response
+                if not hmac.compare_digest(supplied, ("Bearer " + token).encode("utf-8")):
+                    failed_attempts += 1
+                    if failed_attempts >= 5:
+                        failed_attempts = 0
+                        blocked_until = now + 60
+                        response = jsonify(error="5 codes incorrects : accès bloqué pendant 60 secondes.")
+                        response.status_code = 429
+                        response.headers["Retry-After"] = "60"
+                        return response
+                    return jsonify(error="Code d'accès incorrect."), 401
+                failed_attempts = 0
             return function(*args, **kwargs)
         return wrapped
 

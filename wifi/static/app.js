@@ -6,8 +6,8 @@ let generation = 0;
 async function requestData(capture) {
   if (busy) return;
   const token = el("code").value.trim();
-  if (!/^[a-fA-F0-9]{32}$/.test(token)) {
-    el("status").textContent = "Recopiez les 32 caractères du code affiché sur le PC.";
+  if (!/^[0-9]{4}$/.test(token)) {
+    el("status").textContent = "Recopiez les 4 chiffres du code affiché sur le PC.";
     return;
   }
   const current = generation;

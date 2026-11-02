@@ -14,7 +14,7 @@ py -m venv .venv
 .\.venv\Scripts\python.exe agent.py
 ```
 
-4. Cliquer sur **Activer le partage**. Le programme affiche une ou plusieurs adresses et un code de 32 caractères. Choisir l'IPv4 de la carte Wi-Fi/Ethernet connectée au même réseau que le téléphone (`ipconfig` permet de la vérifier).
+4. Cliquer sur **Activer le partage**. Le programme affiche une ou plusieurs adresses et un code de 4 chiffres. Choisir l'IPv4 de la carte Wi-Fi/Ethernet connectée au même réseau que le téléphone (`ipconfig` permet de la vérifier).
 5. Si Windows le demande, autoriser Python **uniquement sur les réseaux privés**. Ne pas désactiver le pare-feu.
 
 L'agent n'est pas installé au démarrage de Windows. Il reste visible et peut être réduit dans la barre des tâches ; cette version n'a pas encore d'icône dans la zone de notification. Fermer sa fenêtre arrête le partage. Chaque activation génère un nouveau code.
@@ -52,7 +52,8 @@ Ne pas rediriger ce port sur la box et ne pas ouvrir la règle au profil Public.
 
 - Capture de l'écran principal à la demande ; une capture maximum par seconde et une seule en cours.
 - Liste des fenêtres visibles : nom de programme, PID, titre. Ce n'est pas la liste de tous les processus système.
-- Code aléatoire de 128 bits requis par les API, renouvelé à chaque activation. Aucun code n'est enregistré sur disque par le programme ou dans le stockage web.
+- Code aléatoire de 4 chiffres (zéros initiaux possibles) requis par les API, renouvelé à chaque activation. Aucun code n'est enregistré sur disque par le programme ou dans le stockage web.
+- Après 5 tentatives incorrectes consécutives, les API sont bloquées pendant 60 secondes pour tous les appareils, même avec le bon code. La page reste accessible. Un accès réussi remet le compteur à zéro. Un code court est moins sûr : réseau privé de confiance uniquement.
 - Activité affichée dans la fenêtre du PC. Pas de journal contenant les captures ou le code.
 - Pas de sauvegarde automatique des captures ; le navigateur peut toutefois permettre à l'utilisateur de les enregistrer.
 - **HTTP n'est pas chiffré : code, titres et images peuvent être interceptés sur le réseau.** Utiliser seulement un réseau privé de confiance. Cette version n'est pas conçue pour Internet ou un Wi-Fi public ; un accès extérieur demandera un transport chiffré et une protection réseau adaptés.

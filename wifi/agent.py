@@ -59,7 +59,7 @@ class Agent:
         if self.server:
             self.stop()
             return
-        token = secrets.token_hex(16)
+        token = f"{secrets.randbelow(10000):04d}"
         try:
             app = create_app(token, notify=self.events.put)
             # Pas de journaux de requêtes ni de mode debug exposé sur le réseau.
